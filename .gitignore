@@ -1,0 +1,8 @@
+/target
+**/*.rs.bk
+
+**/*.swp
+**/*~
+
+# Cargo.lock files should be ignored for libraries.
+Cargo.lock
