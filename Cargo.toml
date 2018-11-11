@@ -1,0 +1,4 @@
+[package]
+name = "ds_linalg"
+version = "0.1.0"
+authors = ["drewsberry <drew@drewsilcock.co.uk>"]
