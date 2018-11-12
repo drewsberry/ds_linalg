@@ -19,7 +19,11 @@ pub struct DSMatrixCoordIter {
 
 pub type MatrixOpResult<T> = Result<T, &'static str>; // TODO: Improve error type.
 
-impl<T> DSMatrix<T> where T: Default + Clone {
+impl<T> DSMatrix<T>
+where
+    T: Clone + Default + std::fmt::Display,
+    for<'a> T: std::ops::AddAssign<&'a T>,
+{
     pub fn new(in_num_rows: u32, in_num_columns: u32) -> DSMatrix<T> {
         let num_elements = (in_num_rows * in_num_columns) as usize;
         let value_default: T = Default::default();
@@ -49,7 +53,7 @@ impl<T> DSMatrix<T> where T: Default + Clone {
         self.num_columns
     }
 
-    pub fn get_value<'a>(&'a self, row_number: u32, column_number: u32) -> &'a T {
+    pub fn get_value<'b>(&'b self, row_number: u32, column_number: u32) -> &'b T {
         let value_index = self.get_index(row_number, column_number);
         &self.values[value_index]
     }
@@ -57,6 +61,20 @@ impl<T> DSMatrix<T> where T: Default + Clone {
     pub fn set_value(&mut self, row_number: u32, column_number: u32, value: T) {
         let value_index = self.get_index(row_number, column_number);
         self.values[value_index] = value;
+    }
+
+    pub fn calculate_trace(&self) -> MatrixOpResult<T> {
+        if self.num_rows != self.num_columns {
+            return Err("Cannot calculate trace of non-square matrix.");
+        }
+
+        // TODO: Implement this using a diagonal iterator.
+        let mut trace: T = Default::default();
+        for i in 0..self.num_rows {
+            trace += self.get_value(i, i);
+        }
+
+        Ok(trace)
     }
 
     fn get_index(&self, row_number: u32, column_number: u32) -> usize {
@@ -89,7 +107,8 @@ impl Iterator for DSMatrixCoordIter {
 
 impl<T> fmt::Debug for DSMatrix<T>
 where
-    T: Default + Clone + fmt::Debug + fmt::Display
+    T: Clone + Default + std::fmt::Display,
+    for<'a> T: std::ops::AddAssign<&'a T>,
 {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         write!(formatter, "Matrix: \n[ ")?;
@@ -115,7 +134,11 @@ where
     }
 }
 
-impl<T> PartialEq for DSMatrix<T> where T: Default + Clone + PartialEq {
+impl<T> PartialEq for DSMatrix<T>
+where
+    T: Clone + Default + PartialEq + std::fmt::Display,
+    for<'a> T: std::ops::AddAssign<&'a T>,
+{
     fn eq(&self, other: &DSMatrix<T>) -> bool {
         if self.get_num_rows() != other.get_num_rows() || self.get_num_columns() != other.get_num_columns() {
             return false;
@@ -133,8 +156,9 @@ impl<T> PartialEq for DSMatrix<T> where T: Default + Clone + PartialEq {
 
 impl<'a, 'b, T> std::ops::Add<&'b DSMatrix<T>> for &'a DSMatrix<T>
 where
-    T: Default + Clone,
-    for<'c> &'c T: std::ops::Add<Output=T> // This is called a "higher ranked trait bound" (HRTB)
+    T: Clone + Default + std::fmt::Display,
+    for<'c> &'c T: std::ops::Add<Output=T>, // This is called a "higher ranked trait bound" (HRTB)
+    for<'d> T: std::ops::AddAssign<&'d T>,
 {
     type Output = MatrixOpResult<DSMatrix<T>>;
 

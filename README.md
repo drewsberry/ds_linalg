@@ -11,8 +11,10 @@ This is made as a learning project and is not suitable for production use.
 * Implement basic matrix addition -- **done**
 * Set up continuous integration testing -- **done**
 * Implement vec to matrix conversion -- **done**
-* Implement matrix multiplication -- **todo**
-* Implement trace operator -- **todo**
+* Implement matrix multiplication (matrix \* matrix and scalar \* matrix) -- **todo**
+* Implement trace operator -- **done**
+* Implement diagonal iterator -- **todo**
+* Implement conjugate, transpose and Hermitian test -- **todo**
 * Improve error handling -- **todo**
 * Add macro for easily creating matrices of different dimensions -- **todo**
 * Expand matrix operations to generic binary closure operations -- **todo**

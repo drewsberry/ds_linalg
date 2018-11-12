@@ -13,7 +13,8 @@ pub trait ToMatrixWithStride<T> {
 /// as a vec of rows as opposed to a vec of columns.
 impl<T> ToMatrix<DSMatrix<T>> for Vec<Vec<T>>
 where
-    T: Default + Clone
+    T: Clone + Default + std::fmt::Display,
+    for<'a> T: std::ops::AddAssign<&'a T>,
 {
     fn to_matrix(self) -> MatrixOpResult<DSMatrix<T>> {
         if self.len() == 0 || self[0].len() == 0 {
@@ -49,7 +50,8 @@ where
 /// number of columns in the output matrix.
 impl<T> ToMatrixWithStride<DSMatrix<T>> for Vec<T>
 where
-    T: Default + Clone
+    T: Clone + Default + std::fmt::Display,
+    for<'a> T: std::ops::AddAssign<&'a T>,
 {
     fn to_matrix_with_stride(self, stride: u32) -> MatrixOpResult<DSMatrix<T>> {
         if self.len() == 0 {

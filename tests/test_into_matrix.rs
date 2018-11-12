@@ -2,8 +2,7 @@ extern crate ds_linalg;
 
 #[cfg(test)]
 mod tests {
-    use ds_linalg::conversions::ToMatrix;
-    use ds_linalg::conversions::ToMatrixWithStride;
+    use ds_linalg::conversions::{ToMatrix, ToMatrixWithStride};
 
     #[test]
     fn does_u32_vec_to_matrix_conversion_give_expected_results() {
