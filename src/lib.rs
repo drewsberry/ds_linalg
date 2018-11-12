@@ -64,6 +64,84 @@ pub mod ds_lin_alg {
         }
     }
 
+    pub trait ToMatrix<T> {
+        fn to_matrix(self) -> MatrixOpResult<T>;
+    }
+
+    pub trait ToMatrixWithStride<T> {
+        fn to_matrix_with_stride(self, stride: u32) -> MatrixOpResult<T>;
+    }
+
+    /// Implement conversion between 2d vector and matrix. Note that it is interpreted
+    /// as a vec of rows as opposed to a vec of columns.
+    impl<T> ToMatrix<DSMatrix<T>> for Vec<Vec<T>>
+    where
+        T: Default + Clone
+    {
+        fn to_matrix(self) -> MatrixOpResult<DSMatrix<T>> {
+            if self.len() == 0 || self[0].len() == 0 {
+                // Original vec is empty, so resulting matrix is empty.
+                return Err("Cannot convert empty vec to matrix.");
+            }
+
+            let num_rows = self.len();
+            let num_columns = self[0].len();
+            let mut out_matrix = DSMatrix::<T>::new(num_rows as u32, num_columns as u32);
+
+            let mut row_index = 0;
+            let mut col_index = 0;
+            for row in self {
+                if row.len() != num_columns {
+                    return Err("Inner vectors are of different sizes.");
+                }
+
+                for value in row {
+                    out_matrix.set_value(row_index, col_index, value);
+                    col_index += 1;
+                }
+
+                col_index = 0;
+                row_index += 1;
+            }
+
+            Ok(out_matrix)
+        }
+    }
+
+    /// Implement conversion between 2d vector and matrix. Note that it is interpreted
+    /// as a vec of rows as opposed to a vec of columns.
+    impl<T> ToMatrixWithStride<DSMatrix<T>> for Vec<T>
+    where
+        T: Default + Clone
+    {
+        fn to_matrix_with_stride(self, stride: u32) -> MatrixOpResult<DSMatrix<T>> {
+            if self.len() == 0 {
+                // Original vec is empty, so resulting matrix is empty.
+                return Err("Cannot convert empty vec to matrix.");
+            }
+
+            let num_elements = self.len() as u32;
+            if num_elements % stride != 0 {
+                return Err("Vector size is not whole multiple of stride.");
+            }
+
+            let num_rows = num_elements / stride;
+            let mut out_matrix = DSMatrix::<T>::new(num_rows as u32, stride as u32);
+
+            let mut i = 0;
+            for value in self {
+                let row_index = i / stride;
+                let column_index = i % stride;
+
+                out_matrix.set_value(row_index, column_index, value);
+
+                i += 1;
+            }
+
+            Ok(out_matrix)
+        }
+    }
+
     impl Iterator for DSMatrixCoordIter {
         type Item = (u32, u32);
 
@@ -163,6 +241,76 @@ pub mod ds_lin_alg {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use ds_lin_alg::ToMatrix;
+    use ds_lin_alg::ToMatrixWithStride;
+
+    #[test]
+    fn does_u32_matrix_comparison_give_expected_results() {
+        let first_matrix = vec![vec![1, 2], vec![3, 4]].to_matrix();
+        let second_matrix = vec![vec![1, 2], vec![3, 4]].to_matrix();
+        let third_matrix = vec![vec![1, 2], vec![4, 3]].to_matrix();
+
+        assert_eq!(first_matrix, second_matrix, "Matrix comparison operator says identical matrices are different.");
+        assert_ne!(first_matrix, third_matrix, "Matrix comparison operator says differing matrices are equal.")
+    }
+
+    #[test]
+    fn does_u32_matrix_comparison_handle_different_sizes() {
+        let first_matrix = vec![vec![1, 2], vec![3, 4]];
+        let second_matrix = vec![vec![1, 2, 3], vec![3, 4, 5]];
+        let third_matrix = vec![vec![1], vec![3]];
+
+        assert_ne!(first_matrix, second_matrix, "Matrix comparison operator says matrices of different sizes are equal.");
+        assert_ne!(first_matrix, third_matrix, "Matrix comparison operator says matrices of different sizes are equal.")
+    }
+
+    #[test]
+    fn does_u32_vec_to_matrix_conversion_give_expected_results() {
+        let matrix_values = vec![vec![1, 2], vec![3, 4]];
+        let matrix_result = matrix_values.to_matrix();
+
+        assert!(matrix_result.is_ok(), "Failed to convert vector to matrix: '{}'.", matrix_result.err().unwrap());
+
+        let mut expected_output = ds_lin_alg::DSMatrix::<u32>::new(2, 2);
+        expected_output.set_value(0, 0, 1);
+        expected_output.set_value(0, 1, 2);
+        expected_output.set_value(1, 0, 3);
+        expected_output.set_value(1, 1, 4);
+
+        assert_eq!(matrix_result.unwrap(), expected_output, "Vector to matrix conversion did not produce expected results.");
+    }
+
+    #[test]
+    fn does_u32_vec_to_matrix_conversion_handle_different_size_vectors() {
+        let matrix_values = vec![vec![1, 2], vec![3, 4, 5]];
+        let matrix_result = matrix_values.to_matrix();
+
+        assert!(matrix_result.is_err(), "Vector to matrix conversion produced ok when input vector was invalid.");
+    }
+
+    #[test]
+    fn does_u32_vec_with_stride_to_matrix_conversion_give_expected_results() {
+        let matrix_values = vec![1, 2, 3, 4];
+        let matrix_result = matrix_values.to_matrix_with_stride(2);
+
+        assert!(matrix_result.is_ok(), "Unable to convert vector with stride to matrix: '{}'.", matrix_result.err().unwrap());
+
+        let mut expected_matrix = ds_lin_alg::DSMatrix::<u32>::new(2, 2);
+        expected_matrix.set_value(0, 0, 1);
+        expected_matrix.set_value(0, 1, 2);
+        expected_matrix.set_value(1, 0, 3);
+        expected_matrix.set_value(1, 1, 4);
+
+        assert_eq!(matrix_result.unwrap(), expected_matrix, "Vector with stride to matrix conversion did not produce expected results.");
+    }
+
+    #[test]
+    fn does_u32_vec_with_stride_to_matrix_conversion_handle_incorrect_stride() {
+        let matrix_values = vec![1, 2, 3, 4, 5];
+        let matrix_result = matrix_values.to_matrix_with_stride(2);
+
+        assert!(matrix_result.is_err(), "Vector with stride to matrix conversion produced ok when vector length wasn't multiple of stride.");
+    }
 
     #[test]
     fn does_u32_matrix_addition_give_expected_values() {
