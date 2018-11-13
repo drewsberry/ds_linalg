@@ -82,4 +82,87 @@ mod tests {
 
         assert!(trace_result.is_err(), "Trace on non-square matrix produced result when it should have failed.");
     }
+
+    #[test]
+    fn does_u32_matrix_coord_iter_give_expected_results() {
+        let square_matrix = vec![vec![1, 2], vec![3, 4]].to_matrix().unwrap();
+        let square_coord_iter = square_matrix.get_coord_iter();
+
+        let mut square_index = 0;
+        for (current_row, current_col) in square_coord_iter {
+            match square_index {
+                0 => {
+                    assert_eq!(current_row, 0, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                    assert_eq!(current_col, 0, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                },
+                1 => {
+                    assert_eq!(current_row, 0, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                    assert_eq!(current_col, 1, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                },
+                2 => {
+                    assert_eq!(current_row, 1, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                    assert_eq!(current_col, 0, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                },
+                3 => {
+                    assert_eq!(current_row, 1, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                    assert_eq!(current_col, 1, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                },
+                _ => {
+                    assert!(false, "Matrix co-ordinate iterator continued past end of matrix");
+                },
+            }
+
+            square_index += 1;
+        }
+
+        let non_square_matrix = vec![vec![1, 2, 3], vec![4, 5, 6]].to_matrix().unwrap();
+        let non_square_coord_iter = non_square_matrix.get_coord_iter();
+
+        let mut non_square_index = 0;
+        for (current_row, current_col) in non_square_coord_iter {
+            match non_square_index {
+                0 => {
+                    assert_eq!(current_row, 0, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                    assert_eq!(current_col, 0, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                },
+                1 => {
+                    assert_eq!(current_row, 0, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                    assert_eq!(current_col, 1, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                },
+                2 => {
+                    assert_eq!(current_row, 0, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                    assert_eq!(current_col, 2, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                },
+                3 => {
+                    assert_eq!(current_row, 1, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                    assert_eq!(current_col, 0, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                },
+                4 => {
+                    assert_eq!(current_row, 1, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                    assert_eq!(current_col, 1, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                },
+                5 => {
+                    assert_eq!(current_row, 1, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                    assert_eq!(current_col, 2, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                },
+                6 => {
+                    assert_eq!(current_row, 2, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                    assert_eq!(current_col, 0, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                },
+                7 => {
+                    assert_eq!(current_row, 2, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                    assert_eq!(current_col, 1, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                },
+                8 => {
+                    assert_eq!(current_row, 2, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                    assert_eq!(current_col, 2, "Incorrect co-ordinate from matrix co-ordinate iterator.");
+                },
+                _ => {
+                    assert!(false, "Matrix co-ordinate iterator continued past end of matrix");
+                },
+            }
+
+            non_square_index += 1;
+        }
+    }
 }
