@@ -5,7 +5,7 @@ mod tests {
     use ds_linalg::conversions::ToMatrix;
 
     #[test]
-    fn does_u32_matrix_comparison_give_expected_results() {
+    fn does_matrix_comparison_give_expected_results() {
         let first_matrix = vec![vec![1, 2], vec![3, 4]].to_matrix();
         let second_matrix = vec![vec![1, 2], vec![3, 4]].to_matrix();
         let third_matrix = vec![vec![1, 2], vec![4, 3]].to_matrix();
@@ -15,7 +15,7 @@ mod tests {
     }
 
     #[test]
-    fn does_u32_matrix_comparison_handle_different_sizes() {
+    fn does_matrix_comparison_handle_different_sizes() {
         let first_matrix = vec![vec![1, 2], vec![3, 4]];
         let second_matrix = vec![vec![1, 2, 3], vec![3, 4, 5]];
         let third_matrix = vec![vec![1], vec![3]];
@@ -25,7 +25,7 @@ mod tests {
     }
 
     #[test]
-    fn does_u32_matrix_addition_give_expected_values() {
+    fn does_matrix_addition_give_expected_values() {
         let first_matrix = vec![vec![1, 2], vec![3, 4]].to_matrix().unwrap();
         let second_matrix = vec![vec![5, 6], vec![7, 8]].to_matrix().unwrap();
 
@@ -43,7 +43,7 @@ mod tests {
     }
 
     #[test]
-    fn does_u32_matrix_addition_handle_different_dimensions() {
+    fn does_matrix_addition_handle_different_dimensions() {
         let first_matrix = vec![vec![1, 2], vec![3, 4]].to_matrix().unwrap();
         let second_matrix = vec![vec![5, 6, 7], vec![8, 9, 10], vec![11, 12, 13]].to_matrix().unwrap();
 
@@ -53,7 +53,7 @@ mod tests {
     }
 
     #[test]
-    fn does_u32_matrix_trace_give_expected_result() {
+    fn does_matrix_trace_give_expected_result() {
         let matrix_1x1 = vec![vec![1]].to_matrix().unwrap();
         let trace_1x1_result = matrix_1x1.calculate_trace();
         assert!(trace_1x1_result.is_ok(), "Error encountered calculating 1x1 trace: '{}'.", trace_1x1_result.err().unwrap());
@@ -76,7 +76,7 @@ mod tests {
     }
 
     #[test]
-    fn does_u32_matrix_trace_handle_non_square_matrices() {
+    fn does_matrix_trace_handle_non_square_matrices() {
         let non_square_matrix = vec![vec![1, 2], vec![3, 4], vec![5, 6]].to_matrix().unwrap();
         let trace_result = non_square_matrix.calculate_trace();
 
@@ -84,7 +84,7 @@ mod tests {
     }
 
     #[test]
-    fn does_u32_matrix_coord_iter_give_expected_results() {
+    fn does_matrix_coord_iter_give_expected_results() {
         let square_matrix = vec![vec![1, 2], vec![3, 4]].to_matrix().unwrap();
         let square_coord_iter = square_matrix.get_coord_iter();
 

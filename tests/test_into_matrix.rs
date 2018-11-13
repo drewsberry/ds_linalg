@@ -5,7 +5,7 @@ mod tests {
     use ds_linalg::conversions::{ToMatrix, ToMatrixWithStride};
 
     #[test]
-    fn does_u32_vec_to_matrix_conversion_give_expected_results() {
+    fn does_vec_to_matrix_conversion_give_expected_results() {
         let matrix_values = vec![vec![1, 2], vec![3, 4]];
         let matrix_result = matrix_values.to_matrix();
 
@@ -21,7 +21,7 @@ mod tests {
     }
 
     #[test]
-    fn does_u32_vec_to_matrix_conversion_handle_different_size_vectors() {
+    fn does_vec_to_matrix_conversion_handle_different_size_vectors() {
         let matrix_values = vec![vec![1, 2], vec![3, 4, 5]];
         let matrix_result = matrix_values.to_matrix();
 
@@ -29,7 +29,7 @@ mod tests {
     }
 
     #[test]
-    fn does_u32_vec_with_stride_to_matrix_conversion_give_expected_results() {
+    fn does_vec_with_stride_to_matrix_conversion_give_expected_results() {
         let matrix_values = vec![1, 2, 3, 4];
         let matrix_result = matrix_values.to_matrix_with_stride(2);
 
@@ -45,7 +45,7 @@ mod tests {
     }
 
     #[test]
-    fn does_u32_vec_with_stride_to_matrix_conversion_handle_incorrect_stride() {
+    fn does_vec_with_stride_to_matrix_conversion_handle_incorrect_stride() {
         let matrix_values = vec![1, 2, 3, 4, 5];
         let matrix_result = matrix_values.to_matrix_with_stride(2);
 
